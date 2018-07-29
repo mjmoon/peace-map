@@ -289,7 +289,7 @@ function redraw() {
     }
 }
 
-d3.json('/plots/data/countries_50m.topojson').then(function(data){
+d3.json('plots/data/countries_50m.topojson').then(function(data){
 
     countries = topojson.feature(data, data.objects.countries).features.filter(
         function(g) { return (g.properties.GU_A3 == "GRL" || g.properties.GU_A3 == "ATA")?false:true;}
@@ -308,7 +308,7 @@ d3.json('/plots/data/countries_50m.topojson').then(function(data){
         }));
     })
 
-    d3.csv('/plots/data/gpi.csv').then(function(_gpi){
+    d3.csv('plots/data/gpi.csv').then(function(_gpi){
         gpi = _gpi;
         gpi.forEach(function(d){
             var first = gpi.filter(function(g) {
