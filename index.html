@@ -1,0 +1,356 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no">
+    <title>Global Peace Index 2018</title>
+    <script src="//cdnjs.cloudflare.com/ajax/libs/jquery/2.1.3/jquery.min.js"></script>
+    <script src="util.js"></script>
+    <script src="skel.min.js"></script>
+    <script src="main.js"></script>
+    <link rel="stylesheet" href="main.css">
+    <style>
+        #peace-map {
+            position: relative;
+            cursor: default;
+        }
+        #peace-map .svg-content-responsive {
+            display: inline-block;
+            position: absolute;
+            top: 0;
+            left: 0;
+        }
+        #peace-map .map-container {
+            width: 100%;
+            padding-bottom: 45%;
+            vertical-align: top;
+            overflow: hidden;
+            display: inline-block;
+            position: relative;
+            /* border: #ccc solid 1px; */
+        }
+
+        #peace-map .map {
+            stroke: #ffffff;
+        }
+
+        #peace-map .map-labels {
+            font-size: 15px;
+            fill: #444;
+            stroke: #444;
+        }
+
+        #peace-map .details {
+            color: #ccc;
+            fill: #ffffff;
+            width: 100%;
+            left:0;
+            top: 0;
+            bottom: 0;
+            position: absolute;
+            background: rgba(0, 0, 0, 0.75);
+            border-radius: 8px;
+            overflow: scroll;
+            text-align: center;
+        }
+
+        #peace-map .details h1 {
+            padding: 15px 0 0 0;
+            margin: 0;
+            text-align: center;
+            color: #ccc;
+        }
+
+        #peace-map .details p {
+            margin: 0;
+            padding: 0 0 40px 0;
+            text-align: center;
+            background: none;
+            font-size: 0.8em;
+        }
+
+        #peace-map .details .title {
+            font-size: 1.2em;
+        }
+
+        #peace-map .ocean {
+            opacity: 0;
+        }
+
+        #peace-map .mini-plot .arrow,
+        #peace-map .mini-plot .line {
+            fill: none;
+            stroke: #ffffff;
+            stroke-width: 2.5px;
+        }
+
+        #peace-map .mini-plot.ref .line {
+            stroke-dasharray: 4;
+        }
+
+        #peace-map .mini-plot.sub-line .line {
+            stroke-dasharray: 4;
+        }
+
+        #peace-map .mini-plot .circle {
+            r: 4px;
+        }
+
+        #peace-map .mini-plot.ref .circle {
+            r: 2px;
+        }
+
+        #peace-map .legend .mini-plot .label {
+            font-size: 10px;
+            fill: #ffffff;
+            text-anchor: start;
+            alignment-baseline: middle;
+        }
+
+        #peace-map .mini-plot line.description {
+            stroke: #ccc;
+            stroke-dasharray: 3;
+            stroke-width: 2px;
+        }
+
+        #peace-map .mini-plot text.description {
+            fill: #ccc;
+            text-anchor: start;
+            font-size: 16px;
+        }
+
+        #peace-map .mini-plot .description tspan {
+            alignment-baseline: hanging;
+        }
+
+        #peace-map .mini-plot tspan.rank {
+            font-size: 52px;
+        }
+
+        #peace-map .countries {
+            stroke-linejoin: round;
+            stroke-width: 1px;
+        }
+
+        #peace-map .mini-plot .axis text {
+            fill: #ffffff;
+            font-size: 10px;
+            text-anchor: middle;
+        }
+
+        #peace-map .y.axis text {
+            text-anchor: end;
+        }
+
+        #peace-map .hidden {
+            opacity: 0;
+        }
+
+        #peace-map .mini-plot .bar {
+            opacity: 0.3;
+        }
+
+        #peace-map .mini-plot .axis line,
+        #peace-map .mini-plot .axis path {
+            stroke: #ffffff;
+            stroke-width: 1px;
+        }
+
+        #peace-map .legend .axis line,
+        #peace-map .legend .axis path{
+            opacity: 0;
+        }
+
+        #peace-map .subtext {
+            font-size: 0.6em;
+        }
+
+        #peace-map .close-button {
+            position: absolute;
+            top: 0;
+            right: 0;
+            padding: 10px;
+            margin: 0;
+        }
+    </style>
+    <style>
+        #peace-map {
+            padding: 15px;
+        }
+        #peace-map .widget {
+            width: 100%;
+            margin-bottom: 5px;
+        }
+        #peace-map .widget label {
+            font-size: 1em;
+            display: inline-block;
+            margin: 0;
+        }
+        #peace-map .widget button {
+            box-shadow: none;
+            padding: 0 5px;
+            font-size: 17px;
+            height: 1.2em;
+            line-height: 1em;
+            margin: 5px 0;
+            color: #444 !important;
+            vertical-align: middle;
+            width: 10%;
+        }
+        #peace-map input[type="text"] {
+            height: 2em;
+        }
+        #peace-map .year-slider {
+            vertical-align: middle;
+            -webkit-appearance: none;
+            appearance: none;
+            width: 70%;
+            height: 4px;
+            opacity: 0.7;
+            border-radius: 2px;
+            background: #ccc;
+            -webkit-transition: .5s;
+            transition: opacity .5s;
+        }
+        #peace-map .year-slider:hover {
+            opacity: 1;
+        }
+        #peace-map .year-slider::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            appearance: none;
+            border-radius: 5px;
+            width: 10px;
+            height: 10px;
+            background: #444;
+            cursor: pointer;
+        }
+        #peace-map .year-slider::-moz-range-thumb {
+            border-radius: 5px;
+            width: 10px;
+            height: 10px;
+            background: #444;
+            cursor: pointer;
+        }
+        #peace-map .switch {
+            position: relative;
+            display: inline-block;
+            width: 20px;
+            height: 12px;
+        }
+        #peace-map .switch input {
+            display: none;
+        }
+        #peace-map .check-slider {
+            position: absolute;
+            cursor: pointer;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: #ccc;
+            -webkit-transition: .4s;
+            transition: .4s;
+        }
+        #peace-map .check-slider:before {
+            position: absolute;
+            content: "";
+            height: 8px;
+            width: 8px;
+            left: 2px;
+            bottom: 2px;
+            background-color: white;
+            -webkit-transition: .4s;
+            transition: .4s;
+        }
+        #peace-map input:checked + .check-slider {
+            background-color: #2196F3;
+        }
+        #peace-map input:focus + .check-slider {
+            box-shadow: 0 0 1px #2196F3;
+        }
+        #peace-map input:checked + .check-slider:before {
+            -webkit-transform: translateX(8px);
+            -ms-transform: translateX(8px);
+            transform: translateX(8px);
+        }
+        #peace-map p {
+            margin-bottom: 1em;
+        }
+        #peace-map .source {
+            padding: 0;
+            margin: 0 0 15px 0;
+            opacity: 0.8;
+            font-size: 0.9em;
+        }
+    </style>
+</head>
+
+<body>
+    <div id="content" class="plot">
+        <div id="peace-map">
+            <div class="row">
+                <img src="logo.png" alt="institute for economic and peace">
+                <div class="2u 3u$(medium) 12u$(small)">
+                    <div class="widget">
+                        <h4>Year</h4>
+                        <input type="text" value="2018" id="year-value" disabled>
+                        <input type="range" min="2008" max="2018" value="2018" class="year-slider" step="1" id="year-slider" name="year-slider" onchange="changeYear(this.value)">
+                        <button id="prev-year" onclick="prevYear()"><i class="icon fa-caret-left"></i></button>
+                        <button id="next-year" onclick="nextYear()" disabled><i class="icon fa-caret-right"></i></button>
+                    </div>
+                    <div class="widget">
+                        <h4>Options</h4>
+                    </div>
+                    <div class="widget">
+                        <label class="switch">
+                            <input type="checkbox" name="diff-toggle" id="diff-toggle" onclick="toggleDisplay()">
+                            <span class="check-slider"></span>
+                        </label>
+                        <label for="diff-toggle">Show Change from 2008</label>
+                    </div>
+                    <div class="widget">
+                        <label class="switch">
+                            <input type="checkbox" name="region-toggle" id="region-toggle" onclick="toggleDisplay()">
+                            <span class="check-slider"></span>
+                        </label>
+                        <label for="region-toggle">Group by Regions</label>
+                    </div>
+                </div>
+                <div class="6u$ 12u$(medium)">
+                    <h1>Global Peace Index 2018</h1>
+                    <p>The Global Peace Index (GPI) is produced annually by <a href="//economicsandpeace.org" target="_blank">the Institute for Economic and Peace</a>. The Index measures the level of peacefulness for 163 independent states and territories using 23 individual indicators.</p>
+                    <p>Check the interactive map below for the results from 2008 to 2018. Click for details on each country.</p>
+                    <p class="source"><b>Source</b>: Institute for Economics and Peace. Learn more at <a href="//economicsandpeace.org" target="_blank">economicsandpeace.org</a> and <a href="//visionofhumanity.org" target="_blank">visionofhumanity.org</a></p>
+                </div>
+            </div>
+            <div class="map-container">
+                <div class="details">
+                    <div class="close-button" onclick="hideDetail()">
+                        <svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="50" height="50" viewBox="0 0 100 100" preserveAspectRatio="none">
+                            <style>
+                                /* <![CDATA[ */
+                                line {
+                                    stroke-width: 8px;
+                                    stroke: #ccc;
+                                }
+                                /* ]]> */
+                            </style>
+                            <line x1="15" y1="15" x2="85" y2="85" />
+                            <line x1="85" y1="15" x2="15" y2="85" />
+                        </svg>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <!-- <script src="https://d3js.org/d3.v5.min.js"></script> -->
+        <script src="plots/d3.v5.js"></script>
+        <script src="http://d3js.org/topojson.v1.min.js"></script>
+        <!-- <script src="plots/plot-util.js"></script> <script src="plots/crtv-cnt.js"></script> -->
+        <script src="plots/peace-map.js"></script>
+        <script src="plots/peace-map-util.js"></script>
+        <script src="plots/peace-map-details.js"></script>
+    </div>
+</body>
+
+</html>
