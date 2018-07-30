@@ -59,7 +59,6 @@ var detailCols = [
         'Neighbouring Countries Relations',
         'Nuclear and Heavy Weapons',
         'Ongoing Conflict',
-        'Overall Score',
         'Perceptions of Criminality',
         'Police Rate',
         'Political Instability',
